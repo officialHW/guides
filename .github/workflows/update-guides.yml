@@ -31,8 +31,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "Lotion"
-          git config user.email "lotion@users.noreply.github.com"
+          git config user.name "officialHW"
+          git config user.email "170325164+officialHW@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
             # GitHub pauses scheduled jobs in repos with no commits for 60 days; check in now and then.
