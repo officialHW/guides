@@ -125581,9 +125581,11 @@ function sidebar(visible, currentId, link, homeLink) {
       return `<li><a href="${link(p.id)}"${cls} style="padding-left:${8 + depth2 * 14}px">${esc(p.icon || "\u{1F4C4}")} ${esc(p.title || "Untitled")}</a>${hasKids && (open.has(p.id) || depth2 === 0) ? tree(p.id, depth2 + 1) : ""}</li>`;
     }).join("")}</ul>`;
   };
-  return `<nav class="side"><a class="home" href="${homeLink}">${esc(siteTitle())}</a>${tree(null, 0) || '<p class="muted">Nothing shared yet.</p>'}</nav>`;
+  return `<nav class="side"><a class="home" href="${homeLink}"><span class="logo">\u2726</span> Bava <span class="sub">${esc(siteSection())}</span></a>${tree(null, 0) || '<p class="muted">Nothing shared yet.</p>'}</nav>`;
 }
-var siteTitle = () => process.env.LOTION_SITE_TITLE || "Guides";
+var siteSection = () => process.env.LOTION_SITE_TITLE || "Guides";
+var siteTitle = () => `Bava ${siteSection()}`;
+var FAVICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#2f7d6d"/><text x="16" y="23" font-size="20" text-anchor="middle" fill="#fff" font-family="Arial">\u2726</text></svg>')}`;
 function socialTags({ title, description, url: url2, image }) {
   const tags = [
     `<meta property="og:type" content="article">`,
@@ -125608,10 +125610,11 @@ function layout({ title, body: body2, nav: nav2, crumbs = "", social = "" }) {
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' https: data:; media-src 'self'; ${FRAMES}; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>${esc(title)}</title>
+<link rel="icon" href="${FAVICON}">
 ${social}
 <style>${CSS2}</style></head>
-<body><input type="checkbox" id="menu" hidden><label for="menu" class="menu-btn">\u2630 ${esc(siteTitle())}</label>
-<div class="wrap">${nav2}<main>${crumbs}<article>${body2}</article></main></div></body></html>`;
+<body><input type="checkbox" id="menu" hidden><label for="menu" class="menu-btn">\u2630 \u2726 Bava</label>
+<div class="wrap">${nav2}<main>${crumbs}<article>${body2}</article><footer class="made">Published with <span class="logo">\u2726</span> <strong>Bava</strong></footer></main></div></body></html>`;
 }
 function renderSitePage(visible, id2, { link, homeLink, assets = "/", baseUrl = "" }) {
   const page = visible.get(id2);
@@ -125685,12 +125688,15 @@ function exportStaticSite(db2, uploadsDir2, outDir2, { baseUrl = "" } = {}) {
   return { pages: visible.size, ids: [...visible.keys()] };
 }
 var CSS2 = `
-:root{--bg:#fff;--side:#f7f7f5;--text:#2f2f2c;--muted:#8a8984;--hover:rgba(55,53,47,.07);--border:rgba(55,53,47,.13);--accent:#2f7d6d;--code:#f4f3f0;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#1d1d1c;--side:#252524;--text:#e8e6e1;--muted:#94928c;--hover:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--accent:#5cc0a8;--code:#2b2b29;color-scheme:dark}}
+:root{--bg:#fff;--side:#f1f6f4;--text:#2f2f2c;--muted:#8a8984;--hover:rgba(55,53,47,.07);--border:rgba(55,53,47,.13);--accent:#2f7d6d;--code:#f4f3f0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1d1c;--side:#1f2624;--text:#e8e6e1;--muted:#94928c;--hover:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--accent:#5cc0a8;--code:#2b2b29;color-scheme:dark}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit}.wrap{display:flex;min-height:100vh}
 .side{width:270px;flex-shrink:0;background:var(--side);border-right:1px solid var(--border);padding:16px 8px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:14px}
-.side .home{display:block;font-weight:650;font-size:15px;padding:4px 10px 14px;text-decoration:none}
+.side .home{display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px;padding:4px 10px 14px;text-decoration:none}.side .home .sub{font-weight:500;color:var(--muted)}
+.logo{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:400}
+.made{max-width:760px;margin:0 auto;padding:0 56px 48px;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px}.made .logo{width:18px;height:18px;font-size:11px;border-radius:5px}
+.side li a.current{box-shadow:inset 3px 0 0 var(--accent)}
 .side ul{list-style:none;margin:0;padding:0}.side li a{display:block;padding:5px 10px;border-radius:6px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side li a:hover{background:var(--hover)}.side li a.current{background:var(--hover);font-weight:600}
 main{flex:1;min-width:0}.crumbs{padding:12px 20px;font-size:14px;color:var(--muted)}.crumbs a{text-decoration:none}.crumbs span{margin:0 6px}
@@ -125712,7 +125718,7 @@ ul[data-type=taskList] li>label span{display:none}ul[data-type=taskList] li[data
 .menu-btn{display:none}
 @media (max-width:760px){.side{display:none;position:fixed;inset:0;width:auto;z-index:10;height:100vh}#menu:checked~.wrap .side{display:block}
 .menu-btn{display:block;position:fixed;top:10px;right:12px;z-index:11;background:var(--side);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer}
-article{padding:28px 16px 80px}.title{font-size:30px}.crumbs{padding-right:110px}}
+article{padding:28px 16px 80px}.made{padding:0 16px 32px}.title{font-size:30px}.crumbs{padding-right:110px}}
 `;
 
 // server/build-guides.js
