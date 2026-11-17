@@ -2,19 +2,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' https: data:; media-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com https://sqliteviz.com; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>SQL Series: The First Henry Store – Guides</title>
+<title>SQL Series: The First Henry Store – Bava Guides</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%232f7d6d%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2223%22%20font-size%3D%2220%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-family%3D%22Arial%22%3E%E2%9C%A6%3C%2Ftext%3E%3C%2Fsvg%3E">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Guides">
+<meta property="og:site_name" content="Bava Guides">
 <meta property="og:title" content="SQL Series: The First Henry Store">
 <meta name="twitter:card" content="summary">
 <meta property="og:url" content="https://officialhw.github.io/guides/sql-series-the-first-henry-store-2/">
 <style>
-:root{--bg:#fff;--side:#f7f7f5;--text:#2f2f2c;--muted:#8a8984;--hover:rgba(55,53,47,.07);--border:rgba(55,53,47,.13);--accent:#2f7d6d;--code:#f4f3f0;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#1d1d1c;--side:#252524;--text:#e8e6e1;--muted:#94928c;--hover:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--accent:#5cc0a8;--code:#2b2b29;color-scheme:dark}}
+:root{--bg:#fff;--side:#f1f6f4;--text:#2f2f2c;--muted:#8a8984;--hover:rgba(55,53,47,.07);--border:rgba(55,53,47,.13);--accent:#2f7d6d;--code:#f4f3f0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1d1c;--side:#1f2624;--text:#e8e6e1;--muted:#94928c;--hover:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--accent:#5cc0a8;--code:#2b2b29;color-scheme:dark}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit}.wrap{display:flex;min-height:100vh}
 .side{width:270px;flex-shrink:0;background:var(--side);border-right:1px solid var(--border);padding:16px 8px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:14px}
-.side .home{display:block;font-weight:650;font-size:15px;padding:4px 10px 14px;text-decoration:none}
+.side .home{display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px;padding:4px 10px 14px;text-decoration:none}.side .home .sub{font-weight:500;color:var(--muted)}
+.logo{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:400}
+.made{max-width:760px;margin:0 auto;padding:0 56px 48px;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px}.made .logo{width:18px;height:18px;font-size:11px;border-radius:5px}
+.side li a.current{box-shadow:inset 3px 0 0 var(--accent)}
 .side ul{list-style:none;margin:0;padding:0}.side li a{display:block;padding:5px 10px;border-radius:6px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side li a:hover{background:var(--hover)}.side li a.current{background:var(--hover);font-weight:600}
 main{flex:1;min-width:0}.crumbs{padding:12px 20px;font-size:14px;color:var(--muted)}.crumbs a{text-decoration:none}.crumbs span{margin:0 6px}
@@ -36,7 +40,7 @@ ul[data-type=taskList] li>label span{display:none}ul[data-type=taskList] li[data
 .menu-btn{display:none}
 @media (max-width:760px){.side{display:none;position:fixed;inset:0;width:auto;z-index:10;height:100vh}#menu:checked~.wrap .side{display:block}
 .menu-btn{display:block;position:fixed;top:10px;right:12px;z-index:11;background:var(--side);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer}
-article{padding:28px 16px 80px}.title{font-size:30px}.crumbs{padding-right:110px}}
+article{padding:28px 16px 80px}.made{padding:0 16px 32px}.title{font-size:30px}.crumbs{padding-right:110px}}
 </style></head>
-<body><input type="checkbox" id="menu" hidden><label for="menu" class="menu-btn">☰ Guides</label>
-<div class="wrap"><nav class="side"><a class="home" href="../">Guides</a><ul><li><a href="../ai-workflow-builder-guide-claude-n8n/" style="padding-left:8px">📄 AI Workflow Builder Guide - Claude × n8n</a><ul><li><a href="../new-form/" style="padding-left:22px">🗃️ New form</a></li></ul></li><li><a href="../data-engineering-portfolio-career-switcher-project-roadmap/" style="padding-left:8px">📄 Data Engineering Portfolio - Career Switcher Project Roadmap</a></li><li><a href="../sql-series-the-first-henry-store-2/" class="current" style="padding-left:8px">📄 SQL Series: The First Henry Store</a></li></ul></nav><main><div class="crumbs"><a href="../sql-series-the-first-henry-store-2/">SQL Series: The First Henry Store</a></div><article><h1 class="title">SQL Series: The First Henry Store</h1><p class="muted updated">Updated 17 November 2026</p><div class="embed embed-app"><iframe src="https://sqliteviz.com/app/#/load?data_url=https://raw.githubusercontent.com/officialHW/Data-Engineering-roadmap/main/sql/data/thefirst_henrystore.db&amp;data_format=sqlite&amp;inquiry_url=https://raw.githubusercontent.com/officialHW/Data-Engineering-roadmap/main/sql/data/thefirst_henrystore_inquiries.json" allowfullscreen="true" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture; encrypted-media"></iframe></div><p></p></article></main></div></body></html>
+<body><input type="checkbox" id="menu" hidden><label for="menu" class="menu-btn">☰ ✦ Bava</label>
+<div class="wrap"><nav class="side"><a class="home" href="../"><span class="logo">✦</span> Bava <span class="sub">Guides</span></a><ul><li><a href="../ai-workflow-builder-guide-claude-n8n/" style="padding-left:8px">📄 AI Workflow Builder Guide - Claude × n8n</a><ul><li><a href="../new-form/" style="padding-left:22px">🗃️ New form</a></li></ul></li><li><a href="../data-engineering-portfolio-career-switcher-project-roadmap/" style="padding-left:8px">📄 Data Engineering Portfolio - Career Switcher Project Roadmap</a></li><li><a href="../sql-series-the-first-henry-store-2/" class="current" style="padding-left:8px">📄 SQL Series: The First Henry Store</a></li></ul></nav><main><div class="crumbs"><a href="../sql-series-the-first-henry-store-2/">SQL Series: The First Henry Store</a></div><article><h1 class="title">SQL Series: The First Henry Store</h1><p class="muted updated">Updated 17 November 2026</p><div class="embed embed-app"><iframe src="https://sqliteviz.com/app/#/load?data_url=https://raw.githubusercontent.com/officialHW/Data-Engineering-roadmap/main/sql/data/thefirst_henrystore.db&amp;data_format=sqlite&amp;inquiry_url=https://raw.githubusercontent.com/officialHW/Data-Engineering-roadmap/main/sql/data/thefirst_henrystore_inquiries.json" allowfullscreen="true" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture; encrypted-media"></iframe></div><p></p></article><footer class="made">Published with <span class="logo">✦</span> <strong>Bava</strong></footer></main></div></body></html>
