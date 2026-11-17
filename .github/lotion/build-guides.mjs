@@ -25908,7 +25908,7 @@ var require_websocket = __commonJS({
     var net = __require("net");
     var querystring = __require("querystring");
     var tls = __require("tls");
-    var { randomBytes, createHash } = __require("crypto");
+    var { randomBytes, createHash: createHash2 } = __require("crypto");
     var { Duplex, Readable } = __require("stream");
     var { URL: URL13 } = __require("url");
     var PerMessageDeflate2 = require_permessage_deflate();
@@ -26595,7 +26595,7 @@ var require_websocket = __commonJS({
           abortHandshake(websocket, socket, "Invalid Upgrade header");
           return;
         }
-        const digest = createHash("sha1").update(key + GUID).digest("base64");
+        const digest = createHash2("sha1").update(key + GUID).digest("base64");
         if (res.headers["sec-websocket-accept"] !== digest) {
           abortHandshake(websocket, socket, "Invalid Sec-WebSocket-Accept header");
           return;
@@ -26969,7 +26969,7 @@ var require_websocket_server = __commonJS({
     var EventEmitter = __require("events");
     var http = __require("http");
     var { Duplex } = __require("stream");
-    var { createHash } = __require("crypto");
+    var { createHash: createHash2 } = __require("crypto");
     var extension2 = require_extension();
     var PerMessageDeflate2 = require_permessage_deflate();
     var subprotocol2 = require_subprotocol();
@@ -27276,7 +27276,7 @@ var require_websocket_server = __commonJS({
           );
         }
         if (this._state > RUNNING) return abortHandshake(socket, 503);
-        const digest = createHash("sha1").update(key + GUID).digest("base64");
+        const digest = createHash2("sha1").update(key + GUID).digest("base64");
         const headers3 = [
           "HTTP/1.1 101 Switching Protocols",
           "Upgrade: websocket",
@@ -125571,9 +125571,13 @@ function sidebar(visible, currentId, link, homeLink) {
   }
   for (const list of kids.values()) list.sort((a, b) => a.position - b.position);
   const open = /* @__PURE__ */ new Set();
-  for (let p = visible.get(currentId); p; p = visible.get(p.siteParent)) open.add(p.id);
+  let root = null;
+  for (let p = visible.get(currentId); p; p = visible.get(p.siteParent)) {
+    open.add(p.id);
+    root = p;
+  }
   const tree = (parent2, depth2) => {
-    const list = kids.get(parent2) || [];
+    const list = parent2 === null ? root ? [root] : [] : kids.get(parent2) || [];
     if (!list.length) return "";
     return `<ul>${list.map((p) => {
       const hasKids = (kids.get(p.id) || []).length > 0;
@@ -125581,7 +125585,8 @@ function sidebar(visible, currentId, link, homeLink) {
       return `<li><a href="${link(p.id)}"${cls} style="padding-left:${8 + depth2 * 14}px">${esc(p.icon || "\u{1F4C4}")} ${esc(p.title || "Untitled")}</a>${hasKids && (open.has(p.id) || depth2 === 0) ? tree(p.id, depth2 + 1) : ""}</li>`;
     }).join("")}</ul>`;
   };
-  return `<nav class="side"><a class="home" href="${homeLink}"><span class="logo">\u2726</span> Bava <span class="sub">${esc(siteSection())}</span></a>${tree(null, 0) || '<p class="muted">Nothing shared yet.</p>'}</nav>`;
+  void homeLink;
+  return `<nav class="side"><span class="home"><span class="logo">\u2726</span> Bava <span class="sub">${esc(siteSection())}</span></span>${tree(null, 0)}</nav>`;
 }
 var siteSection = () => process.env.LOTION_SITE_TITLE || "Guides";
 var siteTitle = () => `Bava ${siteSection()}`;
@@ -125640,13 +125645,12 @@ function renderSitePage(visible, id2, { link, homeLink, assets = "/", baseUrl = 
   return html.replaceAll('src="/uploads/', `src="${assets}uploads/`);
 }
 function renderSiteHome(visible, { link, homeLink, assets = "/", baseUrl = "" }) {
-  const tops = [...visible.values()].filter((p) => !p.siteParent).sort((a, b) => a.position - b.position);
-  const cards = tops.map((p) => `<a class="card" href="${link(p.id)}"><span>${esc(p.icon || "\u{1F4C4}")}</span>${esc(p.title || "Untitled")}</a>`).join("");
+  void link;
   return layout({
     title: siteTitle(),
-    social: socialTags({ title: siteTitle(), description: tops.map((p) => p.title).join(" \xB7 ").slice(0, 180), url: baseUrl ? `${baseUrl}/` : "" }),
+    social: socialTags({ title: siteTitle(), description: "Guides shared with Bava.", url: baseUrl ? `${baseUrl}/` : "" }),
     nav: sidebar(visible, null, link, homeLink),
-    body: `<h1 class="title">${esc(siteTitle())}</h1>${cards ? `<div class="cards">${cards}</div>` : '<p class="muted">Nothing has been shared yet.</p>'}`
+    body: `<h1 class="title">${esc(siteTitle())}</h1><p class="muted">Guides here are shared by link. Open the link you were sent to read a guide.</p>`
   }).replaceAll('src="/uploads/', `src="${assets}uploads/`);
 }
 function sharedUploadNames(visible) {
@@ -125776,7 +125780,9 @@ for (const r2 of rows2) {
   }
 }
 var result2 = exportStaticSite(db, uploadsDir, outDir, { baseUrl: SITE_URL });
-var versions = Object.fromEntries(rows2.map((r2) => [r2.id, Date.parse(r2.updated_at)]));
+var { createHash } = await import("node:crypto");
+var hid = (id2) => createHash("sha256").update(id2).digest("hex").slice(0, 24);
+var versions = Object.fromEntries(rows2.map((r2) => [hid(r2.id), Date.parse(r2.updated_at)]));
 fs2.writeFileSync(path2.join(outDir, "lotion-status.json"), JSON.stringify({ pages: versions }, null, 1));
 console.log(`Built ${result2.pages} shared page(s) into ${outDir}`);
 /*! Bundled license information:
