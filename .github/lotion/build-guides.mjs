@@ -125496,7 +125496,7 @@ var TableKit = Extension.create({
 });
 
 // server/public-site.js
-var SAFE_EMBED = /^https:\/\/(www\.youtube-nocookie\.com\/embed\/[\w-]+|player\.vimeo\.com\/video\/\d+|www\.loom\.com\/embed\/[0-9a-f]+)$/;
+var SAFE_EMBED = /^https:\/\/(www\.youtube-nocookie\.com\/embed\/[\w-]+|player\.vimeo\.com\/video\/\d+|www\.loom\.com\/embed\/[0-9a-f]+|sqliteviz\.com\/app\/(?:#\/[\w\/?=&%.:~+-]*)?)$/;
 var Video = Node3.create({
   name: "video",
   group: "block",
@@ -125509,10 +125509,10 @@ var Embed = Node3.create({
   group: "block",
   atom: true,
   addAttributes: () => ({ src: { default: null } }),
-  renderHTML: ({ node }) => SAFE_EMBED.test(String(node.attrs.src || "")) ? ["div", { class: "embed" }, ["iframe", { src: node.attrs.src, allowfullscreen: "true", loading: "lazy", referrerpolicy: "strict-origin-when-cross-origin", allow: "fullscreen; picture-in-picture; encrypted-media" }]] : ["div", {}, ""]
+  renderHTML: ({ node }) => SAFE_EMBED.test(String(node.attrs.src || "")) ? ["div", { class: String(node.attrs.src).startsWith("https://sqliteviz.com/") ? "embed embed-app" : "embed" }, ["iframe", { src: node.attrs.src, allowfullscreen: "true", loading: "lazy", referrerpolicy: "strict-origin-when-cross-origin", allow: "fullscreen; picture-in-picture; encrypted-media" }]] : ["div", {}, ""]
 });
 var extensions = [src_default, TaskList, TaskItem.configure({ nested: true }), Image2, TableKit, Video, Embed];
-var FRAMES = "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com";
+var FRAMES = "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com https://sqliteviz.com";
 var esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 function sharedPages(db2) {
   const rows3 = db2.prepare(
@@ -125697,7 +125697,7 @@ main{flex:1;min-width:0}.crumbs{padding:12px 20px;font-size:14px;color:var(--mut
 article{max-width:760px;margin:0 auto;padding:40px 56px 120px}
 .icon{font-size:60px;line-height:1.1}.title{font-size:40px;line-height:1.2;margin:8px 0 4px}.updated{margin:0 0 24px;font-size:13px}.muted{color:var(--muted)}
 article h1:not(.title){font-size:30px;margin:1.4em 0 .3em}article h2{font-size:23px;margin:1.4em 0 .3em}article h3{font-size:19px;margin:1.3em 0 .3em}
-article p{margin:.35em 0}article img{max-width:100%;border-radius:6px;display:block;margin:12px 0}article video{width:100%;max-height:80vh;border-radius:6px;display:block;margin:12px 0;background:#000}article .embed{position:relative;aspect-ratio:16/9;margin:12px 0;border-radius:6px;overflow:hidden;background:#000}article .embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+article p{margin:.35em 0}article img{max-width:100%;border-radius:6px;display:block;margin:12px 0}article video{width:100%;max-height:80vh;border-radius:6px;display:block;margin:12px 0;background:#000}article .embed{position:relative;aspect-ratio:16/9;margin:12px 0;border-radius:6px;overflow:hidden;background:#000}article .embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}article .embed-app{aspect-ratio:auto;height:min(720px,80vh);background:#fff;border:1px solid rgba(55,53,47,.13)}
 article blockquote{border-left:3px solid var(--text);margin:10px 0;padding:2px 0 2px 16px}
 article pre{background:var(--code);border-radius:6px;padding:14px 16px;overflow-x:auto;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
 article :not(pre)>code{background:var(--code);padding:2px 5px;border-radius:4px;font-size:.88em}
