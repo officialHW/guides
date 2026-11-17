@@ -1,0 +1,46 @@
+# Keeps your public guides site in step with online Lotion, even when your Mac is off.
+# Every 5 minutes GitHub rebuilds the site from your shared pages and publishes it if anything changed.
+name: Update guides
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: update-guides
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Build the site from Lotion
+        run: node --no-warnings .github/lotion/build-guides.mjs .
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
+      - name: Publish if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "Lotion"
+          git config user.email "lotion@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            # GitHub pauses scheduled jobs in repos with no commits for 60 days; check in now and then.
+            if [ $(( $(date +%s) - $(git log -1 --format=%ct) )) -lt 4320000 ]; then
+              echo "No changes."; exit 0
+            fi
+            git commit --allow-empty -q -m "Keep the guides updater running"
+          else
+            git commit -q -m "Update guides"
+          fi
+          git push -q
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" > /dev/null || true
