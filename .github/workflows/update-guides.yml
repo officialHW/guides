@@ -1,4 +1,4 @@
-# Keeps your public guides site in step with online Lotion, even when your Mac is off.
+# Keeps your public guides site in step with online Bava, even when your Mac is off.
 # Every 5 minutes GitHub rebuilds the site from your shared pages and publishes it if anything changed.
 name: Update guides
 on:
@@ -20,12 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Build the site from Lotion
+      - name: Build the site from Bava
         run: node --no-warnings .github/lotion/build-guides.mjs .
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           SITE_URL: ${{ vars.SITE_URL }}
+          GUIDES_WORKSPACE: ${{ vars.GUIDES_WORKSPACE }}
       - name: Publish if anything changed
         env:
           GH_TOKEN: ${{ github.token }}

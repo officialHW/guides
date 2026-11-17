@@ -28694,7 +28694,7 @@ function seed(db2) {
   const content2 = {
     type: "doc",
     content: [
-      p("Lotion is your own private notes app. Everything is saved on this computer."),
+      p("Bava is your own private notes app. Everything is saved on this computer."),
       { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Try these" }] },
       {
         type: "taskList",
@@ -28707,10 +28707,10 @@ function seed(db2) {
       }
     ]
   };
-  const body2 = "Lotion is your own private notes app. Everything is saved on this computer. Try these";
+  const body2 = "Bava is your own private notes app. Everything is saved on this computer. Try these";
   db2.prepare(
     "INSERT INTO pages (id, parent_id, title, icon, content, body, position, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?)"
-  ).run("welcome", null, "Welcome to Lotion", "\u{1F44B}", JSON.stringify(content2), body2, 0, now, now);
+  ).run("welcome", null, "Welcome to Bava", "\u{1F44B}", JSON.stringify(content2), body2, 0, now, now);
   db2.syncFts("welcome");
 }
 
@@ -125716,7 +125716,7 @@ article{padding:28px 16px 80px}.title{font-size:30px}.crumbs{padding-right:110px
 `;
 
 // server/build-guides.js
-var { SUPABASE_URL, SUPABASE_ANON_KEY, SITE_URL = "" } = process.env;
+var { SUPABASE_URL, SUPABASE_ANON_KEY, SITE_URL = "", GUIDES_WORKSPACE = "" } = process.env;
 var outDir = path2.resolve(process.argv[2] || "site");
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error("Set SUPABASE_URL and SUPABASE_ANON_KEY");
@@ -125728,7 +125728,7 @@ async function get2(url2) {
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url2.replace(SUPABASE_URL, "")}: ${await res.text()}`);
   return res;
 }
-var rows2 = await (await get2(`${SUPABASE_URL}/rest/v1/pages?select=id,owner,parent_id,title,icon,position,content,body,shared,slug,created_at,updated_at&order=position`)).json();
+var rows2 = await (await get2(`${SUPABASE_URL}/rest/v1/pages?select=id,owner,parent_id,title,icon,position,content,body,shared,slug,created_at,updated_at${/^[0-9a-f-]{36}$/.test(GUIDES_WORKSPACE) ? `&workspace_id=eq.${GUIDES_WORKSPACE}` : ""}&order=position`)).json();
 var db = openDb(":memory:");
 db.exec("DELETE FROM pages_fts; DELETE FROM pages;");
 var ids = new Set(rows2.map((r2) => r2.id));
@@ -125754,12 +125754,17 @@ for (const r2 of [...rows2].sort((a, b) => depth(a) - depth(b))) {
   );
 }
 var uploadsDir = fs2.mkdtempSync(path2.join(os2.tmpdir(), "lotion-uploads-"));
-var owners = new Map(rows2.map((r2) => [r2.id, r2.owner]));
 for (const r2 of rows2) {
   for (const m of JSON.stringify(r2.content || "").matchAll(/\/uploads\/([0-9a-f-]+\.[a-z0-9]+)/g)) {
     const file = path2.join(uploadsDir, m[1]);
     if (fs2.existsSync(file)) continue;
-    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/authenticated/uploads/${owners.get(r2.id)}/${m[1]}`, { headers: headers2 });
+    const where = await fetch(`${SUPABASE_URL}/rest/v1/rpc/bava_upload_path`, {
+      method: "POST",
+      headers: { ...headers2, "Content-Type": "application/json" },
+      body: JSON.stringify({ fname: m[1] })
+    });
+    const objectPath = where.ok ? await where.json() : null;
+    const res = objectPath ? await fetch(`${SUPABASE_URL}/storage/v1/object/authenticated/uploads/${objectPath}`, { headers: headers2 }) : { ok: false, status: where.ok ? 404 : where.status };
     if (res.ok) fs2.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
     else console.warn(`Image ${m[1]} not available (${res.status})`);
   }
